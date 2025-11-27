@@ -1,4 +1,5 @@
 import psycopg2 as pg
+import pandas as pd
 
 #Conexão com banco de dados
 def connect_db(dbname, user, password, port, host):
@@ -57,12 +58,55 @@ def buscar_alunos_por_turno(turno: str):
             except:
                 print("Erro: Falha ao buscar alunos por turno!")
 
-#cadastrar_aluno('Davi Saldanha', 'davi@email.com', 'davi01', '8590001245')
+def quantidade_alunos_por_turma():
+    with connect_db('lab365', 'postgres', 'postgres', 5433, 'localhost') as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute('''
+                    SELECT t.nome, COUNT(at.fk_aluno) AS total_alunos
+                    FROM tbl_turma t
+                    LEFT JOIN tbl_aluno_has_turma at ON at.fk_turma = t.id_turma
+                    GROUP BY t.nome
+                ''')
+            except:
+                print(f'Erro: Falha ao retornar quantidade de alunos por turma!')
 
-dataset = buscar_alunos_por_turno('Tarde')
+            return cur.fetchall()
+
+#Retornar os e-mails dos alunos por uma determinada turma
+def emails_alunos_por_turma(turma_id: int):
+    with connect_db('lab365', 'postgres', 'postgres', 5433, 'localhost') as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute('''
+                    SELECT a.email 
+                    FROM tbl_aluno a
+                    JOIN tbl_aluno_has_turma at ON a.id_aluno = at.fk_aluno
+                    WHERE at.fk_turma = %s;
+                ''', (turma_id,))
+                return cur.fetchall()
+            except:
+                print('Erro: Falha ao listar os e-mails!')
+
+#cadastrar_aluno('Davi Saldanha', 'davi@email.com', 'davi01', '8590001245')
+'''
+dataset = emails_alunos_por_turma(2)
 
 for i in dataset:
-    print(i)
+    print(i[0])
+'''
+sql = 'SELECT * FROM tbl_aluno;'
+con = connect_db('lab365', 'postgres', 'postgres', 5433, 'localhost')
+
+df = pd.read_sql(sql, con)
+
+con.close()
+
+print(df.info())
+
+'''
+    DESAFIO: Gerar uma plotagem que apresente a distribuição de alunos por turno
+'''
 
 
 
