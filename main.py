@@ -107,6 +107,31 @@ print(df.info())
 '''
     DESAFIO: Gerar uma plotagem que apresente a distribuição de alunos por turno
 '''
+import matplotlib.pyplot as plt
+def plot_alunos_por_turno():
+    with connect_db('lab365', 'postgres', 'postgres', 5433, 'localhost') as conn:
+        with conn.cursor() as cur:
+            try:
+                cur.execute('''
+                    SELECT t.turno, COUNT(at.fk_aluno) AS total_alunos
+                    FROM tbl_turma t
+                    LEFT JOIN tbl_aluno_has_turma at ON at.fk_turma = t.id_turma
+                    GROUP BY t.turno;
+                ''')
+                data = cur.fetchall()
+                
+                turnos = [row[0] for row in data]
+                total_alunos = [row[1] for row in data]
+
+                plt.bar(turnos, total_alunos, color=['blue', 'orange', 'green'])
+                plt.xlabel('Turno')
+                plt.ylabel('Número de Alunos')
+                plt.title('Distribuição de Alunos por Turno')
+                plt.show()
+            except:
+                print('Erro: Falha ao gerar plotagem!')
+
+plot_alunos_por_turno()
 
 
 
