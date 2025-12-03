@@ -1,4 +1,4 @@
-from database import *
+from .database import connect_db
 import matplotlib.pyplot as plt
 
 def ranking_alunos_por_curso():
@@ -98,7 +98,7 @@ def emails_alunos_por_turma(turma_id: int):
             except:
                 print('Erro: Falha ao listar os e-mails!')
 
-def plot_alunos_port_turno():
+def alunos_por_turno():
     with connect_db('lab365', 'postgres', 'postgres', 5433, 'localhost') as conn:
         with conn.cursor() as cur:
             try:
@@ -108,16 +108,7 @@ def plot_alunos_port_turno():
                     JOIN tbl_aluno_has_turma at ON t.id_turma = at.fk_turma
                     GROUP BY t.turno;
                 ''')
-
                 data = cur.fetchall()
-
-                turnos = [row[0] for row in data]
-                total_alunos = [row[1] for row in data]
-
-                plt.bar(turnos, total_alunos, color=['blue','green', 'orange'])
-                plt.xlabel('Turnos')
-                plt.ylabel('Qtd_alunos')
-                plt.title('Distribuição de Alunos por Turno')
-                plt.show()
+                return data
             except Exception as e:
-                print("Erro: Falha ao gerar plotagem!", e)
+                print(f"Erro: {e}")
