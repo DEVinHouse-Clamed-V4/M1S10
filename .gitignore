@@ -1,3 +1,4 @@
 data
 /src/tests.py
 /src/__pycache__/
+/src/etl/__pycache__/
