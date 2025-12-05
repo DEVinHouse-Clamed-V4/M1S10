@@ -3,7 +3,7 @@ from src.database import connect_db
 
 
 def extrair_alunos_csv(path: str) -> pd.DataFrame:
-    df = pd.read_csv(path, dtypes= {
+    df = pd.read_csv(path, dtype = {
         'id_aluno': int,
         'nome': str,
         'email': str,
