@@ -9,6 +9,7 @@ def limpar_alunos_csv(df: pd.DataFrame):
     # Tratamento id_aluno
     # --------------------
     df_clean['id_aluno'] = pd.to_numeric(df_clean['id_aluno'], errors='coerce')
+    df_clean['id_aluno'] = df_clean['id_aluno'].dropna().astype(int)
 
     # --------------------
     # Tratamento nome
@@ -23,6 +24,7 @@ def limpar_alunos_csv(df: pd.DataFrame):
         return nome
 
     df_clean['nome'] = df_clean['nome'].apply(limpar_nome)
+    df_clean.fillna({'nome': 'Não Informado'}, inplace=True)
 
     # --------------------
     # Tratamento email
@@ -39,6 +41,7 @@ def limpar_alunos_csv(df: pd.DataFrame):
         return email
     
     df_clean['email'] = df_clean['email'].apply(limpar_email)
+    df_clean.fillna({'email': 'Não Informado'}, inplace=True)
 
     # --------------------
     # Tratamento senha
@@ -49,6 +52,7 @@ def limpar_alunos_csv(df: pd.DataFrame):
         return senha.strip()
 
     df_clean['senha'] = df_clean['senha'].apply(limpar_senha)
+    df_clean.fillna({'senha': 'senha123'}, inplace=True)
 
     # --------------------
     # Tratamento telefone
@@ -58,17 +62,21 @@ def limpar_alunos_csv(df: pd.DataFrame):
             return np.nan
         telefone = re.sub(r'\D', '', telefone)
 
-        if len(telefone) <= 11:
+        if len(telefone) != 11:
             return np.nan
 
         return telefone
 
     df_clean['telefone'] = df_clean['telefone'].apply(limpar_telefone)
+    df_clean.fillna({'telefone': 'N/A'}, inplace=True)
 
     # --------------------
     # Remoção Duplicatas
     # --------------------
-    df_clean = df_clean.drop_duplicates(subset=['nome', 'email', 'telefone'])
+    
+    df_clean.drop_duplicates(subset=['id_aluno'], inplace=True)
+    df_clean = df_clean.drop_duplicates(subset=['nome', 'email', 'telefone', 'senha'])
+
 
     df_clean = df_clean.reset_index(drop=True)
 

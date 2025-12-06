@@ -14,6 +14,7 @@ def connect_db(dbname, user, password, port, host):
         print("Erro: Falha ao conectar com o banco de dados!\n")
 
 def cadastrar_aluno(nome: str, email: str, senha: str, telefone: str):
+
     '''
         Cadastra um novo aluno no banco de dados.
 
@@ -28,5 +29,6 @@ def cadastrar_aluno(nome: str, email: str, senha: str, telefone: str):
             try:
                 cur.execute('INSERT INTO tbl_aluno(nome, email, senha, telefone) VALUES (%s, %s, %s, %s)',
                             (nome, email, senha, telefone))
-            except:
-                print('Error: Falha ao cadastrar aluno!')
+            except Exception as e:
+                print('Error: Falha ao cadastrar aluno! ', e)
+
